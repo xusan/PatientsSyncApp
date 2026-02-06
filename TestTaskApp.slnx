@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Applications/">
+    <Project Path="WorkerService/WorkerService.csproj" />
+    <Project Path="WpfApp/WpfApp.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Core/Core.csproj" />
+    <Project Path="Services/Services.csproj" />
+  </Folder>
+  <Folder Name="/Persistence/">
+    <Project Path="EfDataStorage/EfDataStorage.csproj" />
+  </Folder>
+</Solution>
