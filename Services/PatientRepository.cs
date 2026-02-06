@@ -13,7 +13,7 @@ public class PatientRepository : IPatientRepository
         this.database = database;
     }
 
-    public Task<ActionResultResponse<IEnumerable<PatientModel>>> GetAllAsync()
+    public Task<ActionResultResponse<List<PatientModel>>> GetAllAsync()
     {
         throw new NotImplementedException();
     }
