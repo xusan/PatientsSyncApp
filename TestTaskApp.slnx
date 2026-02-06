@@ -4,6 +4,7 @@
     <Project Path="WpfApp/WpfApp.csproj" />
   </Folder>
   <Folder Name="/Infrastructure/">
+    <Project Path="Bootstrap/Bootstrap.csproj" Id="aaf10ff7-1547-4298-b431-da9305dcb632" />
     <Project Path="Core/Core.csproj" />
     <Project Path="Services/Services.csproj" />
   </Folder>

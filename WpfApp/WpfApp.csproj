@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EfDataStorage\EfDataStorage.csproj" />
-    <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\Bootstrap\Bootstrap.csproj" />
   </ItemGroup>
 
 </Project>

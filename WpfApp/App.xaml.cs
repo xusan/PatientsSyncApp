@@ -1,7 +1,6 @@
-﻿using EfDataStorage;
+﻿using Bootstrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Services;
 using System.Windows;
 using WpfApp.ViewModels;
 
@@ -18,16 +17,9 @@ public partial class App : Application
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
-                // Register your DbContext (e.g., from EfDataStorage/DependencyInjection.cs)
-                services.AddPersistence(context.Configuration, context.HostingEnvironment);
-
-                // Register your application services (e.g., from Services/DependencyInjection.cs)
-                services.AddServices();
-
-                // Register the ViewModel
+                services.AddApplicationInfrastructure(context.Configuration, context.HostingEnvironment);
+                
                 services.AddSingleton<MainViewModel>();
-
-                // Register your Windows (WPF needs this to inject them)
                 services.AddSingleton<MainWindow>();
             })
             .Build();

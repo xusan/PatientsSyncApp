@@ -1,5 +1,5 @@
-using EfDataStorage;
-using Services;
+using Bootstrap;
+using Microsoft.EntityFrameworkCore;
 using WorkerService;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -9,11 +9,7 @@ builder.Services.AddWindowsService(options =>
     options.ServiceName = "PatientsSyncService";
 });
 
-// Register your DbContext (e.g., from EfDataStorage/DependencyInjection.cs)
-builder.Services.AddPersistence(builder.Configuration, builder.Environment);
-
-// Register your application services (e.g., from Services/DependencyInjection.cs)
-builder.Services.AddServices();
+builder.Services.AddApplicationInfrastructure(builder.Configuration, builder.Environment);
 
 builder.Services.AddHostedService<Worker>();
 
