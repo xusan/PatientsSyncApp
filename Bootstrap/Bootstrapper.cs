@@ -1,4 +1,5 @@
-﻿using Core.Contracts;
+﻿using Core.Contracts.Repositories;
+using Core.Contracts.Services;
 using EfDataStorage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,15 +22,16 @@ public static class Bootstrapper
             if (environment.IsDevelopment())
                 options.EnableSensitiveDataLogging();
         });
-
-        // 2. Repositories
-        services.AddScoped<IPatientRepository, PatientRepository>();
+        
+        services.AddScoped<IPatientsRepository, PatientsRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
-        services.AddScoped<ISyncService, SyncService>();
 
-        // 3. AutoMapper (assuming MappingProfile is in your Services project)
-        // You need to point to a type inside the assembly where your profiles are
-        services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+        services.AddSingleton<IPatientsService, PatientsService>();
+        services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<ISyncService, SyncService>();
+
+        services.AddAutoMapper(typeof(EntitiesMappingProfile).Assembly);
 
         return services;
     }

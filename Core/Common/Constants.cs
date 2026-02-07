@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Models;
+namespace Core.Common;
 
-public class ActionResultResponse<T> : ActionResponse
+public class Constants
 {
-    public T Result { get; set; }
+    public const string ServiceName = "PatientSyncService";
 }

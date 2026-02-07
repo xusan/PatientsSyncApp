@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Contracts;
+namespace Core.Contracts.Repositories;
 
 public interface ISettingsRepository
 {
-    public Task<ActionResultResponse<ServiceSettingsModel>> GetAsync();
-    public Task<ActionResponse> UpdateAsync(ServiceSettingsModel serviceSettings);
+    public Task<ServiceSettingsModel> GetAsync();
+    public Task<int> UpdateAsync(ServiceSettingsModel serviceSettings);
 }

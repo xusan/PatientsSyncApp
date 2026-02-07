@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Core;
-using Core.Contracts;
+using Core.Common;
+using Core.Contracts.Repositories;
+using Core.Contracts.Services;
 using Core.Models;
 using Cronos;
 using EfDataStorage.Entities;
@@ -23,21 +24,21 @@ namespace WpfApp.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private readonly ISettingsRepository settingsRepo;
-        private readonly IPatientRepository patientRepo;
+        private readonly ISettingsService settingsService;
+        private readonly IPatientsService patientService;
         private readonly IMapper mapper;
         private readonly ILogger<MainViewModel> logger;
         private ServiceController serviceController;
         private bool isServiceAvaiable;
         private DispatcherTimer statusTimer;
 
-        public MainViewModel(ISettingsRepository settingsRepo, 
-                            IPatientRepository patientRepo, 
+        public MainViewModel(ISettingsService settingsService, 
+                            IPatientsService patientService, 
                             IMapper mapper,
                             ILogger<MainViewModel> logger)
         {
-            this.settingsRepo = settingsRepo;
-            this.patientRepo = patientRepo;
+            this.settingsService = settingsService;
+            this.patientService = patientService;
             this.mapper = mapper;
             this.logger = logger;
 
@@ -95,8 +96,15 @@ namespace WpfApp.ViewModels
         {
             try
             {                
-                var res = await settingsRepo.GetAsync();
-                this.Settings = mapper.Map<ServiceSettingsViewModel>(res.Result);
+                var res = await settingsService.GetAsync();
+                if (res.Success)
+                {
+                    this.Settings = mapper.Map<ServiceSettingsViewModel>(res.Result);
+                }     
+                else
+                {
+                    MessageBox.Show($"Failed to load settings: {res.Msg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception ex)
             {
@@ -106,14 +114,15 @@ namespace WpfApp.ViewModels
 
         private async Task LoadPatientsAsync()
         {
-            try
-            {                
-                var res = await patientRepo.GetAllAsync();
+            var res = await patientService.GetAllAsync();
+
+            if (res.Success)
+            {
                 this.Patients = res.Result;
             }
-            catch (Exception ex)
+            else
             {
-                logger.LogError(ex, "Failed to LoadPatientsAsync()");
+                MessageBox.Show($"Failed to load patients: {res.Msg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -166,7 +175,7 @@ namespace WpfApp.ViewModels
             // Logic Pause: Update the DB flag
             Settings.IsPaused = !Settings.IsPaused;
             var model = mapper.Map<ServiceSettingsModel>(Settings);
-            var res = await settingsRepo.UpdateAsync(model);
+            var res = await settingsService.UpdateAsync(model);
 
             this.OnPropertyChanged(nameof(PauseButtonText));
 
@@ -180,7 +189,7 @@ namespace WpfApp.ViewModels
             if (isValid)
             {
                 var model = mapper.Map<ServiceSettingsModel>(Settings);
-                var res = await settingsRepo.UpdateAsync(model);
+                var res = await settingsService.UpdateAsync(model);
                 if (res.Success)
                 {
                     MessageBox.Show("Settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

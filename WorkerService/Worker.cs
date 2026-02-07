@@ -1,18 +1,22 @@
-using Core.Contracts;
+using Core.Contracts.Repositories;
+using Core.Contracts.Services;
 using Cronos;
 using Microsoft.Extensions.Hosting.WindowsServices;
+using Services;
 using System.ServiceProcess;
 
 namespace WorkerService;
 
 public class Worker : BackgroundService
-{
-    private readonly IServiceProvider serviceProvider;
+{    
+    private readonly ISettingsService settingsService;    
+    private readonly ISyncService syncService;
     private readonly ILogger<Worker> logger;
 
-    public Worker(IServiceProvider serviceProvider, ILogger<Worker> logger)
-    {
-        this.serviceProvider = serviceProvider;
+    public Worker(ISettingsService settingsService, ISyncService syncService, ILogger<Worker> logger)
+    {        
+        this.settingsService = settingsService;        
+        this.syncService = syncService;
         this.logger = logger;
     }
 
@@ -22,48 +26,41 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            try
+            // 1. Fetch settings (AppService handles the DB scope)
+            var settingsResult = await settingsService.GetAsync();
+
+            if (settingsResult.Success)
             {
-                using (var scope = serviceProvider.CreateScope())
+                var settings = settingsResult.Result;
+
+                // 2. Check Global Pause Flag
+                if (settings.IsPaused)
                 {
-                    var settingsRepo = scope.ServiceProvider.GetRequiredService<ISettingsRepository>();
-                    var syncService = scope.ServiceProvider.GetRequiredService<ISyncService>();
-                    
-                    var settingsRes = await settingsRepo.GetAsync();
-
-                    if (settingsRes.Success)
+                    logger.LogInformation("Service is PAUSED via settings.");
+                }
+                else
+                {
+                    // 3. Check Cron for Inbound
+                    if (IsTimeToRun(settings.ImportSchedule, "Import task"))
                     {
-                        var settings = settingsRes.Result;
-                        // 2. Check if WPF App set the Pause flag
-                        if (settings.IsPaused)
-                        {
-                            logger.LogInformation("Service is PAUSED via database settings. Skipping...");
-                        }
-                        else
-                        {
-                            // 3. Check Cron for Inbound (Receiving)
-                            if (IsTimeToRun(settings.ImportSchedule, "Import task"))
-                            {
-                                logger.LogInformation("Triggering Inbound Sync...");
-                                await syncService.ImportPatientsFromCsvAsync(settings.ImportFolder);
-                            }
+                        logger.LogInformation("Running Import...");
+                        await syncService.ImportPatientsFromCsvAsync(settings.ImportFolder);
+                    }
 
-                            // 4. Check Cron for Outbound (Sending)
-                            if (IsTimeToRun(settings.ExportSchedule, "Export task"))
-                            {
-                                logger.LogInformation("Triggering Outbound Export...");
-                                await syncService.ExportPatientsToCsvAsync(settings.ExportFolder);
-                            }
-                        }
+                    // 4. Check Cron for Outbound
+                    if (IsTimeToRun(settings.ExportSchedule, "Export task"))
+                    {
+                        logger.LogInformation("Running Export...");
+                        await syncService.ExportPatientsToCsvAsync(settings.ExportFolder);
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                logger.LogError(ex, "Error occurred during sync cycle.");
+                logger.LogError("Could not retrieve settings: {Error}", settingsResult.Msg);
             }
 
-            // Wait 1 minute (Standard Cron resolution)
+            // Wait 1 minute for next cron check
             await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
     }

@@ -1,5 +1,5 @@
 using Bootstrap;
-using Core;
+using Core.Common;
 using Microsoft.EntityFrameworkCore;
 using WorkerService;
 

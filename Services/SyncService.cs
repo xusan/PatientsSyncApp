@@ -1,4 +1,6 @@
-﻿using Core.Contracts;
+﻿using Core.Common;
+using Core.Contracts.Repositories;
+using Core.Contracts.Services;
 using Core.Models;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
@@ -14,12 +16,12 @@ namespace Services;
 
 public class SyncService : ISyncService
 {
-    private readonly IPatientRepository patientRepo;
+    private readonly IPatientsService patientsService;
     private readonly ILogger<SyncService> logger;
 
-    public SyncService(IPatientRepository patientRepo, ILogger<SyncService> logger)
+    public SyncService(IPatientsService patientsService, ILogger<SyncService> logger)
     {
-        this.patientRepo = patientRepo;
+        this.patientsService = patientsService;
         this.logger = logger;
     }
 
@@ -28,13 +30,7 @@ public class SyncService : ISyncService
         var res = new ActionResponse();
 
         try
-        {
-            if (!Directory.Exists(inboxDir))
-            {
-                res.Msg = $"Inbound directory does not exist inboxDir={inboxDir}";
-                return res;
-            }
-
+        {           
             var files = Directory.GetFiles(inboxDir, "*.csv");
             const int batchSize = 100;
 
@@ -53,14 +49,14 @@ public class SyncService : ISyncService
 
                     if (batch.Count >= batchSize)
                     {
-                        await patientRepo.UpsertPatientsBatchAsync(batch);
+                        await patientsService.UpsertPatientsBatchAsync(batch);
                         batch.Clear();
                     }
                 }
 
                 if (batch.Any())
                 {
-                    await patientRepo.UpsertPatientsBatchAsync(batch);
+                    await patientsService.UpsertPatientsBatchAsync(batch);
                 }
             }
 
@@ -81,13 +77,7 @@ public class SyncService : ISyncService
         var res = new ActionResponse();
 
         try
-        {
-            if (!Directory.Exists(outboxDir))
-            {
-                res.Msg = $"Export directory does not exist outboxDir={outboxDir}";
-                return res;
-            }
-
+        {           
             string fileName = $"export_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}.csv";
             string fullPath = Path.Combine(outboxDir, fileName);
 
@@ -102,7 +92,7 @@ public class SyncService : ISyncService
 
                 while (true)
                 {                    
-                    var patientsRes = await patientRepo.GetPatientsPageAsync(skip, pageSize);
+                    var patientsRes = await patientsService.GetPatientsPageAsync(skip, pageSize);
                     if (patientsRes.Success)
                     {
                         var patients = patientsRes.Result;                        

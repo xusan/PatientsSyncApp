@@ -2,11 +2,11 @@
 using Core.Models;
 using EfDataStorage.Entities;
 
-namespace Services;
+namespace EfDataStorage;
 
-public class MappingProfile : Profile
+public class EntitiesMappingProfile : Profile
 {
-    public MappingProfile()
+    public EntitiesMappingProfile()
     {        
         CreateMap<PatientEntity, PatientModel>().ReverseMap();
         CreateMap<ServiceSettingsEntity, ServiceSettingsModel>().ReverseMap();
