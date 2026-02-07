@@ -17,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TaskApp.AppServices\TaskApp.AppServices.csproj" />
-    <ProjectReference Include="..\..\TaskApp.Infrastructures\TaskApp.Infrastructures.csproj" />
     <ProjectReference Include="..\Bootstrap\Bootstrap.csproj" />
+    <ProjectReference Include="..\TaskApp.AppServices\TaskApp.AppServices.csproj" />
+    <ProjectReference Include="..\TaskApp.Infrastructures\TaskApp.Infrastructures.csproj" />
   </ItemGroup>
 
 </Project>

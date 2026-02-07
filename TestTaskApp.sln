@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp", "WpfApp\WpfApp.csproj", "{CA31D6DE-C7E8-B6B4-E75F-83CD0E1918DF}"
 EndProject
@@ -19,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{02EA681E-C7D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskApp.Domain", "TaskApp.Domain\TaskApp.Domain.csproj", "{F11DDC44-3572-42E0-9DE3-14C8EA8BAE1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskApp.AppServices", "..\TaskApp.AppServices\TaskApp.AppServices.csproj", "{2D8F9A19-E113-4227-8016-EB544986521A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskApp.Infrastructures", "TaskApp.Infrastructures\TaskApp.Infrastructures.csproj", "{6471A30B-E0DE-F747-FE27-2E121B30E1FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskApp.Infrastructures", "..\TaskApp.Infrastructures\TaskApp.Infrastructures.csproj", "{E9E983B9-A3AF-4B9A-9F18-78E05F325A8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskApp.AppServices", "TaskApp.AppServices\TaskApp.AppServices.csproj", "{71E5A7FA-2487-AFF3-1F32-0CA2D2715BD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,14 +57,14 @@ Global
 		{F11DDC44-3572-42E0-9DE3-14C8EA8BAE1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F11DDC44-3572-42E0-9DE3-14C8EA8BAE1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F11DDC44-3572-42E0-9DE3-14C8EA8BAE1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D8F9A19-E113-4227-8016-EB544986521A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D8F9A19-E113-4227-8016-EB544986521A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D8F9A19-E113-4227-8016-EB544986521A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D8F9A19-E113-4227-8016-EB544986521A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E9E983B9-A3AF-4B9A-9F18-78E05F325A8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9E983B9-A3AF-4B9A-9F18-78E05F325A8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9E983B9-A3AF-4B9A-9F18-78E05F325A8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9E983B9-A3AF-4B9A-9F18-78E05F325A8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6471A30B-E0DE-F747-FE27-2E121B30E1FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6471A30B-E0DE-F747-FE27-2E121B30E1FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6471A30B-E0DE-F747-FE27-2E121B30E1FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6471A30B-E0DE-F747-FE27-2E121B30E1FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71E5A7FA-2487-AFF3-1F32-0CA2D2715BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71E5A7FA-2487-AFF3-1F32-0CA2D2715BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71E5A7FA-2487-AFF3-1F32-0CA2D2715BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71E5A7FA-2487-AFF3-1F32-0CA2D2715BD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
