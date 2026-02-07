@@ -9,7 +9,7 @@ namespace Core.Contracts;
 
 public interface IPatientRepository 
 {
-    public Task<ActionResultResponse<IReadOnlyList<PatientModel>>> GetAllAsync();
-    public Task<ActionResponse> InsertAsync(IReadOnlyList<PatientModel> patients);
-    public Task<ActionResponse> UpdateAsync(IReadOnlyList<PatientModel> patients);
+    Task<ActionResultResponse<IReadOnlyList<PatientModel>>> GetAllAsync();
+    Task<ActionResultResponse<IReadOnlyList<PatientModel>>> GetPatientsPageAsync(int skip, int take);
+    Task<ActionResponse> UpsertPatientsBatchAsync(IEnumerable<PatientModel> patientModels);
 }

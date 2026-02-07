@@ -15,4 +15,6 @@ public class ServiceSettingsEntity : IEntity
 
     public string OutboxFolder { get; set; } = string.Empty;
     public string InboxFolder { get; set; } = string.Empty;
+
+    public bool IsPaused { get; set; }
 }

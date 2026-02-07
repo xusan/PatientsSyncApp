@@ -1,5 +1,6 @@
 ﻿using Bootstrap;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
 using WpfApp.ViewModels;
@@ -15,6 +16,12 @@ public partial class App : Application
     public App()
     {
         _host = Host.CreateDefaultBuilder()
+            .ConfigureLogging((context, logging) =>
+            {                
+                logging.ClearProviders();
+                logging.AddDebug();
+                logging.SetMinimumLevel(LogLevel.Information);
+            })
             .ConfigureServices((context, services) =>
             {
                 services.AddApplicationInfrastructure(context.Configuration, context.HostingEnvironment);

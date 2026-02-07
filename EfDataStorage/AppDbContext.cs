@@ -13,8 +13,9 @@ namespace EfDataStorage;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    public AppDbContext()
     {
+        this.Database.EnsureCreated();
     }
 
     public DbSet<PatientEntity> Patients => Set<PatientEntity>();

@@ -1,4 +1,5 @@
 using Bootstrap;
+using Core;
 using Microsoft.EntityFrameworkCore;
 using WorkerService;
 
@@ -6,7 +7,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddWindowsService(options =>
 {
-    options.ServiceName = "PatientsSyncService";
+    options.ServiceName = Constants.ServiceName;
 });
 
 builder.Services.AddApplicationInfrastructure(builder.Configuration, builder.Environment);

@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 namespace Core.Models;
 
 public class ServiceSettingsModel
-{    
+{
+    public int Id { get; set; }
+
     public string SendingSchedule { get; set; } = string.Empty;
     public string ReceivingSchedule { get; set; } = string.Empty;
 
     public string OutboxFolder { get; set; } = string.Empty;
     public string InboxFolder { get; set; } = string.Empty;
+
+    public bool IsPaused { get; set; }
 }

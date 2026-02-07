@@ -9,6 +9,6 @@ namespace Core.Models;
 public class ActionResponse
 {
     public bool Success { get; set; }
-    public Exception Exception { get; set; }
+    public string Msg { get; set; }
 }
 

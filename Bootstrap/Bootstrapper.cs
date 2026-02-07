@@ -25,13 +25,11 @@ public static class Bootstrapper
         // 2. Repositories
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
+        services.AddScoped<ISyncService, SyncService>();
 
         // 3. AutoMapper (assuming MappingProfile is in your Services project)
         // You need to point to a type inside the assembly where your profiles are
         services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
-        // 4. Business Services
-        //services.AddScoped<ISyncService, SyncService>();
 
         return services;
     }
