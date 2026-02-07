@@ -48,13 +48,16 @@ namespace WpfApp.ViewModels
         }
 
         public ServiceSettingsViewModel Settings { get; set; } = new ServiceSettingsViewModel();
-        public IReadOnlyList<PatientModel> Patients { get; set; } = new List<PatientModel>();
-        public string StatusText { get; set;  }        
+        public IReadOnlyList<PatientModel> Patients { get; set; } = new List<PatientModel>();        
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
         public ICommand PauseToggleCommand { get; }
         public ICommand SaveSettingsCommand { get; }
         public ICommand RefreshPatientsCommand { get; }
+        public const string PauseText = "Pause", ContinueText = "Continue";
+        public string PauseButtonText => Settings.IsPaused ? ContinueText : PauseText;        
+        public string StatusText { get; set; }
+
 
         private void Initializer()
         {
@@ -152,24 +155,34 @@ namespace WpfApp.ViewModels
         private async void OnPauseToggleCommand()
         {
             // Logic Pause: Update the DB flag
-            Settings.IsPaused = !Settings.IsPaused;
+            Settings.IsPaused = !Settings.IsPaused;            
             OnSaveSettingsCommand();
+
+            this.OnPropertyChanged(nameof(PauseButtonText));
 
             logger.Value.LogInformation($"Service logic set to: {(Settings.IsPaused ? "PAUSED" : "RUNNING")}");
         }
 
         private async void OnSaveSettingsCommand()
         {
-            logger.Value.LogInformation("SaveSettings()");
-            var model = mapper.Value.Map<ServiceSettingsModel>(Settings);
-            await settingsRepo.Value.UpdateAsync(model);            
+            logger.Value.LogInformation("SaveSettings();");
+            var isValid = this.ValidateSettings();
+            if (isValid)
+            {
+                var model = mapper.Value.Map<ServiceSettingsModel>(Settings);
+                await settingsRepo.Value.UpdateAsync(model);
+            }
         }
 
         private void RefreshServiceStatus()
         {
             try
             {
-                if (isServiceAvaiable)
+                if (Settings.IsPaused)
+                {
+                    StatusText = "Paused";
+                }
+                else if (isServiceAvaiable)
                 {
                     serviceController.Refresh();
                     StatusText = serviceController.Status.ToString();
@@ -180,6 +193,12 @@ namespace WpfApp.ViewModels
                 StatusText = "Error reading status";
                 logger.Value.LogError(ex, "Error reading status");                
             }
+        }
+
+
+        private bool ValidateSettings()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -4,9 +4,88 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp"
+        xmlns:viewmodels="clr-namespace:WpfApp.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" 
+        Height="450" 
+        Width="800"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
     <Grid>
+        <TabControl Margin="10">
+            <!-- TAB 1: PATIENT DATA -->
+            <TabItem Header="Patient Records">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
+                    <Button Content="Refresh" Command="{Binding RefreshPatientsCommand}" HorizontalAlignment="Right" Width="120" Margin="5"/>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Patients}" AutoGenerateColumns="True" IsReadOnly="True" Margin="5"/>
+                </Grid>
+            </TabItem>
+
+            <!-- TAB 2: SERVICE MANAGEMENT -->
+            <TabItem Header="Service Management">
+                <ScrollViewer>
+                    <StackPanel Margin="10">
+                        <!-- Service Status Section -->
+                        <GroupBox Header="Service Control" Margin="0,0,0,20">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <TextBlock Text="Current Status: " FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding StatusText}" Foreground="Blue" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <Button Content="Start" Command="{Binding StartCommand}" Width="75" Margin="5"/>
+                                    <Button Content="Stop" Command="{Binding StopCommand}" Width="75" Margin="5"/>
+                                    <Button Content="{Binding PauseButtonText}" Command="{Binding PauseToggleCommand}" Width="75" Margin="5"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Settings Section -->
+                        <GroupBox Header="Synchronisation Settings">
+                            <Grid Margin="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Row 0: Inbound Cron -->
+                                <Label Grid.Row="0" Content="Import Schedule (Cron):" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Settings.ImportSchedule}" Margin="5"/>
+
+                                <!-- Row 1: Inbox Folder -->
+                                <Label Grid.Row="1" Content="Import Folder:" />
+                                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Settings.ImportFolder}" Margin="5" IsReadOnly="True"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="Browse" Command="{Binding BrowseInboxCommand}" Margin="5" Padding="5,0"/>
+
+                                <!-- Row 2: Outbound Cron -->
+                                <Label Grid.Row="2" Content="Export Schedule (Cron):"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Settings.ExportSchedule}" Margin="5"/>
+
+                                <!-- Row 3: Outbox Folder -->
+                                <Label Grid.Row="3" Content="Outbox Folder:" />
+                                <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Settings.ExportFolder}" Margin="5" IsReadOnly="True"/>
+                                <Button Grid.Row="3" Grid.Column="2" Content="Browse" Command="{Binding BrowseOutboxCommand}" Margin="5" Padding="5,0"/>
+
+                                <!-- Save Button -->
+                                <Button Grid.Row="4" Grid.Column="1" Content="Save" Command="{Binding SaveSettingsCommand}" 
+                                        Width="120" Height="30" FontWeight="Bold" Margin="5,25,5,5" HorizontalAlignment="Right"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
