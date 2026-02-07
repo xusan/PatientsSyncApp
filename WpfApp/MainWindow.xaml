@@ -67,7 +67,7 @@
                                 <!-- Row 1: Inbox Folder -->
                                 <Label Grid.Row="1" Content="Import Folder:" />
                                 <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Settings.ImportFolder}" Margin="5" IsReadOnly="True"/>
-                                <Button Grid.Row="1" Grid.Column="2" Content="Browse" Command="{Binding BrowseInboxCommand}" Margin="5" Padding="5,0"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="Browse" Command="{Binding SelectImportFolderCommand}" Margin="5" Padding="5,0"/>
 
                                 <!-- Row 2: Outbound Cron -->
                                 <Label Grid.Row="2" Content="Export Schedule (Cron):"/>
@@ -76,7 +76,7 @@
                                 <!-- Row 3: Outbox Folder -->
                                 <Label Grid.Row="3" Content="Outbox Folder:" />
                                 <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Settings.ExportFolder}" Margin="5" IsReadOnly="True"/>
-                                <Button Grid.Row="3" Grid.Column="2" Content="Browse" Command="{Binding BrowseOutboxCommand}" Margin="5" Padding="5,0"/>
+                                <Button Grid.Row="3" Grid.Column="2" Content="Browse" Command="{Binding SelectExportFolderCommand}" Margin="5" Padding="5,0"/>
 
                                 <!-- Save Button -->
                                 <Button Grid.Row="4" Grid.Column="1" Content="Save" Command="{Binding SaveSettingsCommand}" 

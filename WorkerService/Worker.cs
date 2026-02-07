@@ -42,17 +42,17 @@ public class Worker : BackgroundService
                         else
                         {
                             // 3. Check Cron for Inbound (Receiving)
-                            if (IsTimeToRun(settings.SendingSchedule, "Import task"))
+                            if (IsTimeToRun(settings.ImportSchedule, "Import task"))
                             {
                                 logger.LogInformation("Triggering Inbound Sync...");
-                                await syncService.ImportPatientsFromCsvAsync(settings.InboxFolder);
+                                await syncService.ImportPatientsFromCsvAsync(settings.ImportFolder);
                             }
 
                             // 4. Check Cron for Outbound (Sending)
-                            if (IsTimeToRun(settings.ReceivingSchedule, "Export task"))
+                            if (IsTimeToRun(settings.ExportSchedule, "Export task"))
                             {
                                 logger.LogInformation("Triggering Outbound Export...");
-                                await syncService.ExportPatientsToCsvAsync(settings.OutboxFolder);
+                                await syncService.ExportPatientsToCsvAsync(settings.ExportFolder);
                             }
                         }
                     }

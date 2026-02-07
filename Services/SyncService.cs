@@ -14,10 +14,10 @@ namespace Services;
 
 public class SyncService : ISyncService
 {
-    private readonly Lazy<IPatientRepository> patientRepo;
-    private readonly Lazy<ILogger<SyncService>> logger;
+    private readonly IPatientRepository patientRepo;
+    private readonly ILogger<SyncService> logger;
 
-    public SyncService(Lazy<IPatientRepository> patientRepo, Lazy<ILogger<SyncService>> logger)
+    public SyncService(IPatientRepository patientRepo, ILogger<SyncService> logger)
     {
         this.patientRepo = patientRepo;
         this.logger = logger;
@@ -53,14 +53,14 @@ public class SyncService : ISyncService
 
                     if (batch.Count >= batchSize)
                     {
-                        await patientRepo.Value.UpsertPatientsBatchAsync(batch);
+                        await patientRepo.UpsertPatientsBatchAsync(batch);
                         batch.Clear();
                     }
                 }
 
                 if (batch.Any())
                 {
-                    await patientRepo.Value.UpsertPatientsBatchAsync(batch);
+                    await patientRepo.UpsertPatientsBatchAsync(batch);
                 }
             }
 
@@ -68,7 +68,7 @@ public class SyncService : ISyncService
         }
         catch (Exception ex)
         {            
-            logger.Value.LogError(ex, "Error processing inbound files");
+            logger.LogError(ex, "Error processing inbound files");
             res.Success = false;
             res.Msg = ex.Message;
         }
@@ -102,7 +102,7 @@ public class SyncService : ISyncService
 
                 while (true)
                 {                    
-                    var patientsRes = await patientRepo.Value.GetPatientsPageAsync(skip, pageSize);
+                    var patientsRes = await patientRepo.GetPatientsPageAsync(skip, pageSize);
                     if (patientsRes.Success)
                     {
                         var patients = patientsRes.Result;                        
@@ -129,7 +129,7 @@ public class SyncService : ISyncService
         }
         catch (Exception ex)
         {
-            logger.Value.LogError(ex, "Error exporting patients to outbox");
+            logger.LogError(ex, "Error exporting patients to outbox");
             res.Success = false;
             res.Msg = ex.Message;
         }

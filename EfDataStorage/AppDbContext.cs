@@ -13,7 +13,7 @@ namespace EfDataStorage;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext()
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         this.Database.EnsureCreated();
     }
@@ -42,10 +42,10 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<ServiceSettingsEntity>().HasData(new ServiceSettingsEntity
         {
             Id = 1,
-            SendingSchedule = "0 0 * * *",      // Daily at Midnight
-            ReceivingSchedule = "0 */2 * * *",  // Every 2 hours
-            InboxFolder = @"C:\Temp\Sync\Inbox",
-            OutboxFolder = @"C:\Temp\Sync\Outbox"
+            ExportSchedule = "0 0 * * *",      // Daily at Midnight
+            ImportSchedule = "0 */2 * * *",  // Every 2 hours
+            ExportFolder = @"C:\Temp\Sync\Outbox",
+            ImportFolder = @"C:\Temp\Sync\Inbox",            
         });
 
         modelBuilder.Entity<PatientEntity>().HasData(

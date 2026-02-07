@@ -10,11 +10,9 @@ public class ServiceSettingsModel
 {
     public int Id { get; set; }
 
-    public string SendingSchedule { get; set; } = string.Empty;
-    public string ReceivingSchedule { get; set; } = string.Empty;
-
-    public string OutboxFolder { get; set; } = string.Empty;
-    public string InboxFolder { get; set; } = string.Empty;
-
+    public string ImportFolder { get; set; }
+    public string ImportSchedule { get; set; }
+    public string ExportFolder { get; set; }
+    public string ExportSchedule { get; set; }
     public bool IsPaused { get; set; }
 }

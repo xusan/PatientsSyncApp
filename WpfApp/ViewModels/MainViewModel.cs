@@ -4,10 +4,13 @@ using CommunityToolkit.Mvvm.Input;
 using Core;
 using Core.Contracts;
 using Core.Models;
+using Cronos;
 using EfDataStorage.Entities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
@@ -20,18 +23,18 @@ namespace WpfApp.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private readonly Lazy<ISettingsRepository> settingsRepo;
-        private readonly Lazy<IPatientRepository> patientRepo;
-        private readonly Lazy<IMapper> mapper;
-        private readonly Lazy<ILogger<MainViewModel>> logger;
+        private readonly ISettingsRepository settingsRepo;
+        private readonly IPatientRepository patientRepo;
+        private readonly IMapper mapper;
+        private readonly ILogger<MainViewModel> logger;
         private ServiceController serviceController;
         private bool isServiceAvaiable;
         private DispatcherTimer statusTimer;
 
-        public MainViewModel(Lazy<ISettingsRepository> settingsRepo, 
-                            Lazy<IPatientRepository> patientRepo, 
-                            Lazy<IMapper> mapper,
-                            Lazy<ILogger<MainViewModel>> logger)
+        public MainViewModel(ISettingsRepository settingsRepo, 
+                            IPatientRepository patientRepo, 
+                            IMapper mapper,
+                            ILogger<MainViewModel> logger)
         {
             this.settingsRepo = settingsRepo;
             this.patientRepo = patientRepo;
@@ -43,10 +46,12 @@ namespace WpfApp.ViewModels
             StartCommand = new RelayCommand(OnStartCommand);
             StopCommand = new RelayCommand(OnStopCommand);
             PauseToggleCommand = new RelayCommand(OnPauseToggleCommand);
+            SelectImportFolderCommand = new RelayCommand(OnSelectImportFolderCommand);
+            SelectExportFolderCommand = new RelayCommand(OnSelectExportFolderCommand);
 
             Initializer();            
         }
-
+      
         public ServiceSettingsViewModel Settings { get; set; } = new ServiceSettingsViewModel();
         public IReadOnlyList<PatientModel> Patients { get; set; } = new List<PatientModel>();        
         public ICommand StartCommand { get; }
@@ -54,15 +59,17 @@ namespace WpfApp.ViewModels
         public ICommand PauseToggleCommand { get; }
         public ICommand SaveSettingsCommand { get; }
         public ICommand RefreshPatientsCommand { get; }
+        public ICommand SelectImportFolderCommand { get; }
+        public ICommand SelectExportFolderCommand { get; }
         public const string PauseText = "Pause", ContinueText = "Continue";
         public string PauseButtonText => Settings.IsPaused ? ContinueText : PauseText;        
         public string StatusText { get; set; }
 
 
-        private void Initializer()
+        private async void Initializer()
         {
-            LoadSettings();
-            LoadPatients();
+            await LoadSettings();
+            await LoadPatients();
 
             // Polling timer to refresh Service Status every 2 seconds
             statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
@@ -76,41 +83,41 @@ namespace WpfApp.ViewModels
             }
             catch (Exception ex)
             {
-                logger.Value.LogError(ex, $"Failed to initialize ServiceController for {Constants.ServiceName}. Ensure the service is installed.");
+                logger.LogError(ex, $"Failed to initialize ServiceController for {Constants.ServiceName}. Ensure the service is installed.");
             }
         }
 
-        private async void LoadSettings()
+        private async Task LoadSettings()
         {
             try
             {
-                logger.Value.LogInformation("LoadSettings()");
-                var res = await settingsRepo.Value.GetAsync();
-                this.Settings = mapper.Value.Map<ServiceSettingsViewModel>(res.Result);
+                logger.LogInformation("LoadSettings()");
+                var res = await settingsRepo.GetAsync();
+                this.Settings = mapper.Map<ServiceSettingsViewModel>(res.Result);
             }
             catch (Exception ex)
             {
-                logger.Value.LogError(ex, "Failed to LoadSettings()");                
+                logger.LogError(ex, "Failed to LoadSettings()");                
             }
         }
 
-        private async void LoadPatients()
+        private async Task LoadPatients()
         {
             try
             {
-                logger.Value.LogInformation("LoadPatients()");
-                var res = await patientRepo.Value.GetAllAsync();
+                logger.LogInformation("LoadPatients()");
+                var res = await patientRepo.GetAllAsync();
                 this.Patients = res.Result;
             }
             catch (Exception ex)
             {
-                logger.Value.LogError(ex, "Failed to LoadPatients()");
+                logger.LogError(ex, "Failed to LoadPatients()");
             }
         }
 
-        private void OnRefreshPatientsCommand()
+        private async void OnRefreshPatientsCommand()
         {
-            LoadPatients();
+            await LoadPatients();
         }
 
         private void OnStartCommand()
@@ -128,7 +135,7 @@ namespace WpfApp.ViewModels
             }
             catch (Exception ex) 
             { 
-                logger.Value.LogError(ex, "Failed to start service. Ensure App is Admin."); 
+                logger.LogError(ex, "Failed to start service. Ensure App is Admin."); 
             }
         }
 
@@ -148,7 +155,7 @@ namespace WpfApp.ViewModels
             }
             catch (Exception ex) 
             { 
-                logger.Value.LogError(ex, "Failed to stop service."); 
+                logger.LogError(ex, "Failed to stop service."); 
             }
         }
 
@@ -160,17 +167,53 @@ namespace WpfApp.ViewModels
 
             this.OnPropertyChanged(nameof(PauseButtonText));
 
-            logger.Value.LogInformation($"Service logic set to: {(Settings.IsPaused ? "PAUSED" : "RUNNING")}");
+            logger.LogInformation($"Service logic set to: {(Settings.IsPaused ? "PAUSED" : "RUNNING")}");
         }
 
         private async void OnSaveSettingsCommand()
         {
-            logger.Value.LogInformation("SaveSettings();");
+            logger.LogInformation("SaveSettings();");
             var isValid = this.ValidateSettings();
             if (isValid)
             {
-                var model = mapper.Value.Map<ServiceSettingsModel>(Settings);
-                await settingsRepo.Value.UpdateAsync(model);
+                var model = mapper.Map<ServiceSettingsModel>(Settings);
+                var res = await settingsRepo.UpdateAsync(model);
+                if (res.Success)
+                {
+                    MessageBox.Show("Settings saved successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to save settings: {res.Msg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void OnSelectImportFolderCommand()
+        {
+            var dialog = new OpenFolderDialog
+            {
+                Title = "Select Import Folder",
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Update the property via the Action
+                this.Settings.ImportFolder = dialog.FolderName;
+            }
+        }
+
+        private void OnSelectExportFolderCommand()
+        {            
+            var dialog = new OpenFolderDialog
+            {
+                Title = "Select Export Folder",                
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Update the property via the Action
+               this.Settings.ExportFolder = dialog.FolderName;
             }
         }
 
@@ -191,14 +234,67 @@ namespace WpfApp.ViewModels
             catch (Exception ex)
             {
                 StatusText = "Error reading status";
-                logger.Value.LogError(ex, "Error reading status");                
+                logger.LogError(ex, "Error reading status");                
             }
         }
 
 
         private bool ValidateSettings()
         {
-            throw new NotImplementedException();
+            if(!IsCronValid(Settings.ImportSchedule))
+            {
+                MessageBox.Show("Invalid Cron expression for Import Schedule.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (!IsPathValid(Settings.ImportFolder))
+            {
+                MessageBox.Show("Invalid Import folder path.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (!IsCronValid(Settings.ExportSchedule))
+            {
+                MessageBox.Show("Invalid Cron expression for Export Schedule.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (!IsPathValid(Settings.ExportFolder))
+            {
+                MessageBox.Show("Invalid Export folder path.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+
+        public bool IsCronValid(string expression)
+        {
+            if (string.IsNullOrWhiteSpace(expression)) 
+                return false;
+
+            try
+            {
+                // Try to parse the string. If it fails, it's invalid.
+                CronExpression.Parse(expression);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error reading Cron expression");                
+            }
+
+            return false;
+        }
+
+        public bool IsPathValid(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) 
+                return false;
+
+            // Check if it exists or if the drive is valid
+            return Directory.Exists(path);
         }
     }
 }
