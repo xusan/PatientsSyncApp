@@ -2,34 +2,29 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core;
-using Core.Contracts;
-using Core.Models;
-using EfDataStorage.Entities;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using TaskApp.AppServices.Dto;
+using TaskApp.AppServices.Services.Patients;
+using TaskApp.AppServices.Services.Settings;
 
 namespace WpfApp.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private readonly Lazy<ISettingsRepository> settingsRepo;
-        private readonly Lazy<IPatientRepository> patientRepo;
+        private readonly Lazy<ISettingsAppService> settingsRepo;
+        private readonly Lazy<IPatientAppService> patientRepo;
         private readonly Lazy<IMapper> mapper;
         private readonly Lazy<ILogger<MainViewModel>> logger;
         private ServiceController serviceController;
         private bool isServiceAvaiable;
         private DispatcherTimer statusTimer;
 
-        public MainViewModel(Lazy<ISettingsRepository> settingsRepo, 
-                            Lazy<IPatientRepository> patientRepo, 
+        public MainViewModel(Lazy<ISettingsAppService> settingsRepo, 
+                            Lazy<IPatientAppService> patientRepo, 
                             Lazy<IMapper> mapper,
                             Lazy<ILogger<MainViewModel>> logger)
         {

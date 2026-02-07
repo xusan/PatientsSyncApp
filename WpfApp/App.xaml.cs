@@ -4,6 +4,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
 using WpfApp.ViewModels;
+using EfDataStorage;
+using Microsoft.EntityFrameworkCore;
+using TaskApp.Infrastructures;
+using TaskApp.AppServices;
 
 namespace WpfApp;
 /// <summary>
@@ -24,8 +28,11 @@ public partial class App : Application
             })
             .ConfigureServices((context, services) =>
             {
-                services.AddApplicationInfrastructure(context.Configuration, context.HostingEnvironment);
-                
+                //services.AddApplicationInfrastructure(context.Configuration, context.HostingEnvironment);
+                services.RegisterInfrastructures(context.Configuration);
+                services.RegisterAppServices();
+
+
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
             })
@@ -35,7 +42,9 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         await _host.StartAsync();
-     
+
+        await InitializeDatabaseAsync(); 
+
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
 
@@ -49,6 +58,15 @@ public partial class App : Application
             await _host.StopAsync();
         }
         base.OnExit(e);
+    }
+
+    private async Task InitializeDatabaseAsync()
+    {
+        using (var scope = _host.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<TaskApp.Infrastructures.AppDbContext>();
+            await db.Database.MigrateAsync();
+        }        
     }
 }
 
