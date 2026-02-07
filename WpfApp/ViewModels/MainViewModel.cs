@@ -61,15 +61,16 @@ namespace WpfApp.ViewModels
         public ICommand RefreshPatientsCommand { get; }
         public ICommand SelectImportFolderCommand { get; }
         public ICommand SelectExportFolderCommand { get; }
-        public const string PauseText = "Pause", ContinueText = "Continue";
+        public const string PauseText = "Pause", ContinueText = "Continue", ErrorReadingStatus = "Error reading status", Paused = "Paused";
+
         public string PauseButtonText => Settings.IsPaused ? ContinueText : PauseText;        
         public string StatusText { get; set; }
 
 
         private async void Initializer()
         {
-            await LoadSettings();
-            await LoadPatients();
+            await LoadSettingsAsync();
+            await LoadPatientsAsync();
 
             // Polling timer to refresh Service Status every 2 seconds
             statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
@@ -79,6 +80,9 @@ namespace WpfApp.ViewModels
             try
             {
                 serviceController = new ServiceController(Constants.ServiceName);
+                // Accessing any property (like DisplayName) forces the controller 
+                // to check if the service actually exists in Windows.
+                var name = serviceController.DisplayName;
                 isServiceAvaiable = true;
             }
             catch (Exception ex)
@@ -87,37 +91,35 @@ namespace WpfApp.ViewModels
             }
         }
 
-        private async Task LoadSettings()
+        private async Task LoadSettingsAsync()
         {
             try
-            {
-                logger.LogInformation("LoadSettings()");
+            {                
                 var res = await settingsRepo.GetAsync();
                 this.Settings = mapper.Map<ServiceSettingsViewModel>(res.Result);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to LoadSettings()");                
+                logger.LogError(ex, "Failed to LoadSettingsAsync()");                
             }
         }
 
-        private async Task LoadPatients()
+        private async Task LoadPatientsAsync()
         {
             try
-            {
-                logger.LogInformation("LoadPatients()");
+            {                
                 var res = await patientRepo.GetAllAsync();
                 this.Patients = res.Result;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to LoadPatients()");
+                logger.LogError(ex, "Failed to LoadPatientsAsync()");
             }
         }
 
         private async void OnRefreshPatientsCommand()
         {
-            await LoadPatients();
+            await LoadPatientsAsync();
         }
 
         private void OnStartCommand()
@@ -135,7 +137,7 @@ namespace WpfApp.ViewModels
             }
             catch (Exception ex) 
             { 
-                logger.LogError(ex, "Failed to start service. Ensure App is Admin."); 
+                logger.LogError(ex, "Failed to start service."); 
             }
         }
 
@@ -162,8 +164,9 @@ namespace WpfApp.ViewModels
         private async void OnPauseToggleCommand()
         {
             // Logic Pause: Update the DB flag
-            Settings.IsPaused = !Settings.IsPaused;            
-            OnSaveSettingsCommand();
+            Settings.IsPaused = !Settings.IsPaused;
+            var model = mapper.Map<ServiceSettingsModel>(Settings);
+            var res = await settingsRepo.UpdateAsync(model);
 
             this.OnPropertyChanged(nameof(PauseButtonText));
 
@@ -223,21 +226,24 @@ namespace WpfApp.ViewModels
             {
                 if (Settings.IsPaused)
                 {
-                    StatusText = "Paused";
+                    StatusText = Paused;
                 }
                 else if (isServiceAvaiable)
                 {
                     serviceController.Refresh();
                     StatusText = serviceController.Status.ToString();
                 }
+                else
+                {
+                    StatusText = ErrorReadingStatus;
+                }
             }
             catch (Exception ex)
             {
-                StatusText = "Error reading status";
-                logger.LogError(ex, "Error reading status");                
+                StatusText = ErrorReadingStatus;
+                logger.LogError(ex, ErrorReadingStatus);                
             }
         }
-
 
         private bool ValidateSettings()
         {
@@ -267,7 +273,6 @@ namespace WpfApp.ViewModels
 
             return true;
         }
-
 
         public bool IsCronValid(string expression)
         {
