@@ -66,7 +66,7 @@ public class SyncService : ISyncService
         {            
             logger.LogError(ex, "Error processing inbound files");
             res.Success = false;
-            res.Msg = ex.Message;
+            res.Error = ex;
         }
 
         return res;
@@ -109,7 +109,7 @@ public class SyncService : ISyncService
                     }
                     else
                     {
-                        res.Msg = patientsRes.Msg;
+                        res.Error = patientsRes.Error;
                         return res;
                     }
                 }
@@ -121,7 +121,7 @@ public class SyncService : ISyncService
         {
             logger.LogError(ex, "Error exporting patients to outbox");
             res.Success = false;
-            res.Msg = ex.Message;
+            res.Error = ex;
         }
 
         return res;

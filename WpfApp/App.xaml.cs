@@ -27,7 +27,7 @@ public partial class App : Application
                 services.AddApplicationInfrastructure(context.Configuration, context.HostingEnvironment);
 
                 services.AddAutoMapper(typeof(WpfMappingProfile));
-                services.AddSingleton<MainViewModel>();
+                services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<MainWindow>();
             })
             .Build();

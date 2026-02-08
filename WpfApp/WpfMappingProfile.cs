@@ -13,7 +13,7 @@ public class WpfMappingProfile : Profile
 {
     public WpfMappingProfile()
     {
-        // This is the UI-specific bridge
+        CreateMap<PatientModel, PatientViewModel>().ReverseMap();
         CreateMap<ServiceSettingsModel, ServiceSettingsViewModel>().ReverseMap();        
     }
 }

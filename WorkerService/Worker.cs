@@ -57,7 +57,7 @@ public class Worker : BackgroundService
             }
             else
             {
-                logger.LogError("Could not retrieve settings: {Error}", settingsResult.Msg);
+                logger.LogError("Could not retrieve settings: {Error}", settingsResult.Error?.Message);
             }
 
             // Wait 1 minute for next cron check

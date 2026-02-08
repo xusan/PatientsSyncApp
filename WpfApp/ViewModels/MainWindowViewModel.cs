@@ -2,40 +2,32 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Core.Common;
-using Core.Contracts.Repositories;
 using Core.Contracts.Services;
 using Core.Models;
 using Cronos;
-using EfDataStorage.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace WpfApp.ViewModels
 {
-    public class MainViewModel : ObservableObject
+    public class MainWindowViewModel : ObservableObject
     {
         private readonly ISettingsService settingsService;
         private readonly IPatientsService patientService;
         private readonly IMapper mapper;
-        private readonly ILogger<MainViewModel> logger;
-        private ServiceController serviceController;
-        private bool isServiceAvaiable;
+        private readonly ILogger<MainWindowViewModel> logger;
+        private ServiceController serviceController;        
         private DispatcherTimer statusTimer;
 
-        public MainViewModel(ISettingsService settingsService, 
+        public MainWindowViewModel(ISettingsService settingsService, 
                             IPatientsService patientService, 
                             IMapper mapper,
-                            ILogger<MainViewModel> logger)
+                            ILogger<MainWindowViewModel> logger)
         {
             this.settingsService = settingsService;
             this.patientService = patientService;
@@ -54,7 +46,7 @@ namespace WpfApp.ViewModels
         }
       
         public ServiceSettingsViewModel Settings { get; set; } = new ServiceSettingsViewModel();
-        public IReadOnlyList<PatientModel> Patients { get; set; } = new List<PatientModel>();        
+        public IReadOnlyList<PatientViewModel> Patients { get; set; } = new List<PatientViewModel>();        
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
         public ICommand PauseToggleCommand { get; }
@@ -80,11 +72,7 @@ namespace WpfApp.ViewModels
 
             try
             {
-                serviceController = new ServiceController(Constants.ServiceName);
-                // Accessing any property (like DisplayName) forces the controller 
-                // to check if the service actually exists in Windows.
-                var name = serviceController.DisplayName;
-                isServiceAvaiable = true;
+                serviceController = new ServiceController(Constants.ServiceName);                                
             }
             catch (Exception ex)
             {
@@ -100,11 +88,7 @@ namespace WpfApp.ViewModels
                 if (res.Success)
                 {
                     this.Settings = mapper.Map<ServiceSettingsViewModel>(res.Result);
-                }     
-                else
-                {
-                    MessageBox.Show($"Failed to load settings: {res.Msg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                }                    
             }
             catch (Exception ex)
             {
@@ -118,11 +102,13 @@ namespace WpfApp.ViewModels
 
             if (res.Success)
             {
-                this.Patients = res.Result;
+                this.Patients = res.Result
+                                        .Select(p => mapper.Map<PatientViewModel>(p))
+                                        .ToList();
             }
             else
             {
-                MessageBox.Show($"Failed to load patients: {res.Msg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to load patients: {res.Error?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -135,18 +121,16 @@ namespace WpfApp.ViewModels
         {
             try
             {
-                if (!isServiceAvaiable)
-                {
-                    MessageBox.Show($"Service '{Constants.ServiceName}' is not available. Please ensure it is installed.", "Service Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (serviceController.Status == ServiceControllerStatus.Stopped)
+                if (serviceController.Status == ServiceControllerStatus.Stopped)
                 {
                     serviceController.Start();
                 }
             }
             catch (Exception ex) 
             { 
-                logger.LogError(ex, "Failed to start service."); 
+                logger.LogError(ex, "Failed to start service.");
+
+                MessageBox.Show($"Service '{Constants.ServiceName}' is not available. Please ensure it is installed.", "Service Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -154,11 +138,7 @@ namespace WpfApp.ViewModels
         {
             try
             {
-                if (!isServiceAvaiable)
-                {
-                    MessageBox.Show($"Service '{Constants.ServiceName}' is not available. Please ensure it is installed.", "Service Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                else if (serviceController.Status == ServiceControllerStatus.Running ||
+                if (serviceController.Status == ServiceControllerStatus.Running ||
                     serviceController.Status == ServiceControllerStatus.Paused)
                 {
                     serviceController.Stop();
@@ -166,7 +146,8 @@ namespace WpfApp.ViewModels
             }
             catch (Exception ex) 
             { 
-                logger.LogError(ex, "Failed to stop service."); 
+                logger.LogError(ex, "Failed to stop service.");
+                MessageBox.Show($"Service '{Constants.ServiceName}' is not available. Please ensure it is installed.", "Service Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -196,7 +177,7 @@ namespace WpfApp.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to save settings: {res.Msg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Failed to save settings: {res.Error?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -236,15 +217,11 @@ namespace WpfApp.ViewModels
                 if (Settings.IsPaused)
                 {
                     StatusText = Paused;
-                }
-                else if (isServiceAvaiable)
+                }               
+                else
                 {
                     serviceController.Refresh();
                     StatusText = serviceController.Status.ToString();
-                }
-                else
-                {
-                    StatusText = ErrorReadingStatus;
                 }
             }
             catch (Exception ex)

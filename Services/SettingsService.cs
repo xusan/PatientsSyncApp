@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Core.Common;
+﻿using Core.Common;
 using Core.Contracts.Repositories;
 using Core.Contracts.Services;
 using Core.Models;
@@ -10,8 +9,7 @@ namespace Services;
 
 public class SettingsService : BaseService, ISettingsService
 {    
-    public SettingsService(IServiceScopeFactory scopeFactory,
-                              ILogger<PatientsService> logger) : base(scopeFactory, logger)
+    public SettingsService(IServiceScopeFactory scopeFactory, ILogger<PatientsService> logger) : base(scopeFactory, logger)
     {        
     }
 
@@ -21,8 +19,14 @@ public class SettingsService : BaseService, ISettingsService
         {
             var repo = scope.GetRequiredService<ISettingsRepository>();
 
-            var setting = await repo.GetAsync();            
-            
+            var list = await repo.GetPagedListAsync(0, 1);            
+            var setting = list.FirstOrDefault();
+
+            if (setting == null)
+            {
+                throw new Exception("Error: Settings is null");
+            }
+
             return setting;
         });
     }
@@ -32,7 +36,7 @@ public class SettingsService : BaseService, ISettingsService
         return ExecuteScopedAsync(async scope =>
         {
             var repo = scope.GetRequiredService<ISettingsRepository>();            
-            await repo.UpdateAsync(serviceSettings);
+            await repo.InsertOrUpdateAsync(serviceSettings);
         });
     }
 }

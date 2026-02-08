@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace Core.Contracts.Repositories;
 
-public interface ISettingsRepository
+public interface ISettingsRepository : IRepository<ServiceSettingsModel>
 {
-    public Task<ServiceSettingsModel> GetAsync();
-    public Task<int> UpdateAsync(ServiceSettingsModel serviceSettings);
 }

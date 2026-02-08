@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 
 namespace Core.Contracts.Repositories;
 
-public interface IPatientsRepository 
+public interface IPatientsRepository : IRepository<PatientModel>
 {
-    Task<IReadOnlyList<PatientModel>> GetAllAsync();
-    Task<IReadOnlyList<PatientModel>> GetPageAsync(int skip, int take);
-    Task<int> UpsertBatchAsync(IEnumerable<PatientModel> patientModels);
 }

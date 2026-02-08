@@ -31,8 +31,6 @@ public static class Bootstrapper
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<ISyncService, SyncService>();
 
-        services.AddAutoMapper(typeof(EntitiesMappingProfile).Assembly);
-
         return services;
     }
 }
