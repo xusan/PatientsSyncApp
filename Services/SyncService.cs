@@ -1,16 +1,9 @@
 ﻿using Core.Common;
-using Core.Contracts.Repositories;
 using Core.Contracts.Services;
 using Core.Models;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Formats.Asn1;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services;
 

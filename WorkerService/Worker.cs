@@ -1,9 +1,5 @@
-using Core.Contracts.Repositories;
 using Core.Contracts.Services;
 using Cronos;
-using Microsoft.Extensions.Hosting.WindowsServices;
-using Services;
-using System.ServiceProcess;
 
 namespace WorkerService;
 
