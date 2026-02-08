@@ -12,11 +12,17 @@ namespace Bootstrap;
 public static class Bootstrapper
 {   
     public static IServiceCollection AddApplicationInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
-    {        
+    {
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+
         services.AddDbContext<AppDbContext>(options =>
         {
-            var connectionString = configuration.GetConnectionString("AppDbContext");
-            options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
+            options.UseSqlite(connection);
+        });
+        services.AddDbContext<AppDbContext>(options =>
+        {
+            options.UseInMemoryDatabase("TestDb");
 
             if (environment.IsDevelopment())
                 options.EnableSensitiveDataLogging();
