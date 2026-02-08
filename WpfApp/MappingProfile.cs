@@ -9,9 +9,9 @@ using WpfApp.ViewModels;
 
 namespace WpfApp;
 
-public class WpfMappingProfile : Profile
+public class MappingProfile : Profile
 {
-    public WpfMappingProfile()
+    public MappingProfile()
     {
         CreateMap<PatientModel, PatientViewModel>().ReverseMap();
         CreateMap<ServiceSettingsModel, ServiceSettingsViewModel>().ReverseMap();        
