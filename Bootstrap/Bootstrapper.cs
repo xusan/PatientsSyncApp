@@ -12,8 +12,7 @@ namespace Bootstrap;
 public static class Bootstrapper
 {   
     public static IServiceCollection AddApplicationInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
-    {
-        // 1. Persistence & EF Core
+    {        
         services.AddDbContext<AppDbContext>(options =>
         {
             var connectionString = configuration.GetConnectionString("AppDbContext");

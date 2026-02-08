@@ -41,39 +41,7 @@ public abstract class Repository<T> : IRepository<T> where T : class, IEntity
 
         return entities;
     }
-
-    public async Task<int> AddAsync(T entity)
-    {
-        table.Add(entity);
-        return await context.SaveChangesAsync();
-    }
-
-    public async Task<int> AddAllAsync(IReadOnlyList<T> entities)
-    {
-        table.AddRange(entities);
-        return await context.SaveChangesAsync();
-    }
-
-    public async Task<int> UpdateAsync(T entity)
-    {
-        // handles detached entities safely
-        table.Attach(entity);
-        context.Entry(entity).State = EntityState.Modified;
-
-        return await context.SaveChangesAsync();
-    }
-
-    public async Task<int> UpdateAllAsync(IReadOnlyList<T> entities)
-    {
-        foreach (var entity in entities)
-        {
-            table.Attach(entity);
-            context.Entry(entity).State = EntityState.Modified;
-        }
-
-        return await context.SaveChangesAsync();
-    }
-
+    
     public async Task<int> InsertOrUpdateAsync(T entity)
     {        
         var existingEntity = await table.FindAsync(entity.Id);
