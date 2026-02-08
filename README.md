@@ -4,13 +4,13 @@ The solution was created using **VisualStudio 2026** and **.NET 8**.
 This system features a background **Windows Worker Service** (WorkerService project) and a **WPF Application** (WpfApp project).
 
 
-## 🛠 Setup & Configuration
+## 🛠 Database Connection
 
-### 1. Database Connection
 The application uses **EF Core** with a "Code-First" approach. 
+You can check or edit the `ConnectionString` in the `appsettings.json` file (located in the **WorkerService** project and also linked to the **WpfApp** project).
 
 * **Tested & Recommended:** The app was tested with **SQL LocalDB**, and as such, it is recommended to use SQL LocalDB for the best experience. 
-* **Configuration:** You can check or edit the `ConnectionString` in the `appsettings.json` file (located in the **WorkerService** project and also linked to the **WpfApp** project).
+
 > [!NOTE]  
 > If you choose to use **LocalDB**, you can typically keep the default `appsettings.json` unchanged.
 
@@ -26,10 +26,10 @@ You can run this solution in two ways depending on whether you are developing/de
 ### Option A: Running via Visual Studio (Development)
 *Ideal for testing logic and reviewing code without modifying Windows system settings.*
 
-#### Run both apps in VisualStudio
-1. In Visual Studio, start the **WorkerService** project first, then start the **WpfApp** project (right-click each project and select Debug → Start New Instance)
+In Visual Studio, start the **WorkerService** project first, then start the **WpfApp** project (right-click each project and select Debug → Start New Instance)
 
 **Limitation:** In this mode, only the Pause operation is available. Start and Stop will not work because the service is not registered. All other functionality works as expected.
+
 **Note:** View real-time logs in the VisualStudio Output window and WorkerService Console app.
 
 ---
