@@ -13,7 +13,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<PatientModel, PatientViewModel>().ReverseMap();
-        CreateMap<ServiceSettingsModel, ServiceSettingsViewModel>().ReverseMap();        
+        CreateMap<PatientModel, PatientItemViewModel>().ReverseMap();
+        CreateMap<ServiceSettingsModel, SettingsItemViewModel>().ReverseMap();        
     }
 }

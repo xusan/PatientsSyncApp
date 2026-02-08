@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WpfApp.ViewModels;
 
-public class PatientViewModel : ObservableObject
+public class PatientItemViewModel : ObservableObject
 {
     public int Id { get; set; }
     public string Name { get; set; }

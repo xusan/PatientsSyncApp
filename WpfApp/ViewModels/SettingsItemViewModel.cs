@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WpfApp.ViewModels;
 
-public class ServiceSettingsViewModel : ObservableObject
+public class SettingsItemViewModel : ObservableObject
 {
     public int Id { get; set; }
     public string ImportFolder { get; set; }

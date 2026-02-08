@@ -45,8 +45,8 @@ namespace WpfApp.ViewModels
             Initializer();            
         }
       
-        public ServiceSettingsViewModel Settings { get; set; } = new ServiceSettingsViewModel();
-        public IReadOnlyList<PatientViewModel> Patients { get; set; } = new List<PatientViewModel>();        
+        public SettingsItemViewModel Settings { get; set; } = new SettingsItemViewModel();
+        public IReadOnlyList<PatientItemViewModel> Patients { get; set; } = new List<PatientItemViewModel>();        
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
         public ICommand PauseToggleCommand { get; }
@@ -87,7 +87,7 @@ namespace WpfApp.ViewModels
                 var res = await settingsService.GetAsync();
                 if (res.Success)
                 {
-                    this.Settings = mapper.Map<ServiceSettingsViewModel>(res.Result);
+                    this.Settings = mapper.Map<SettingsItemViewModel>(res.Result);
                 }                    
             }
             catch (Exception ex)
@@ -103,7 +103,7 @@ namespace WpfApp.ViewModels
             if (res.Success)
             {
                 this.Patients = res.Result
-                                        .Select(p => mapper.Map<PatientViewModel>(p))
+                                        .Select(p => mapper.Map<PatientItemViewModel>(p))
                                         .ToList();
             }
             else
