@@ -12,13 +12,9 @@ You can check or edit the `ConnectionString` in the `appsettings.json` file (loc
 * **Tested & Recommended:** The app was tested with **SQL LocalDB**, and as such, it is recommended to use SQL LocalDB for the best experience. If you choose to use **LocalDB**, you can typically keep the default `appsettings.json` unchanged.
 
 
----
-
 ## 🚀 How to Run the Application
 
 You can run this solution in two ways depending on whether you are developing/debugging or testing the full Windows Service integration.
-
----
 
 ### Option A: Running via Visual Studio (Development)
 *Ideal for testing logic and reviewing code without modifying Windows system settings.*
@@ -28,8 +24,6 @@ In Visual Studio, start the **WorkerService** project first, then start the **Wp
 **Limitation:** In this mode, only the Pause operation is available. Start and Stop will not work because the service is not registered. All other functionality works as expected.
 
 **Note:** You can view logs in the VisualStudio Output window and WorkerService Console app.
-
----
 
 ### Option B: Full Service Installation (Production Mode)
 *Use this method to test the full management lifecycle (Start, Stop, and Pause).*
