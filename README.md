@@ -29,9 +29,8 @@ You can run this solution in two ways depending on whether you are developing/de
 #### Run both apps in VisualStudio
 1. In Visual Studio, start the **WorkerService** project first, then start the **WpfApp** project (right-click each project and select Debug → Start New Instance)
 
-**Limitation:** In this mode, the Worker Service runs as a console process. The WPF dashboard will show **"Not Installed"** because the service is not registered with the Windows SCM.
-
-**Functionality:** Background synchronization remains fully functional. View real-time activity in the **Visual Studio Output Window**.
+**Limitation:** In this mode, only the Pause operation is available. Start and Stop will not work because the service is not registered. All other functionality works as expected.
+**Note:** View real-time logs in the VisualStudio Output window and WorkerService Console app.
 
 ---
 
@@ -54,9 +53,9 @@ If you use SQL LocalDB instances as recommended, the service must run under your
 2. Select **This account**, enter your Windows username and password, and click **OK**.
 3. **Restart** the service to apply changes.
 
-#### 4. Run the Manager
+#### 4. Run the WpfApp 
 1. Navigate to your WpfApp project output folder and launch the **WpfApp.exe as Administrator** (required to control Windows Services).
-2. The dashboard will now show the real-time status (**Running/Stopped/Paused**).
+2. The WpfApp will now show the real-time status and allow you to (**Start/Stop/Pause**) service.
 
 ---
 
