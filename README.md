@@ -1,6 +1,6 @@
-# Patient Synchronization System (.NET 8)
+# Patient Synchronization
 
-The solution was created with **VisualStudio 2026** using **.NET 8**. 
+The solution was created using **VisualStudio 2026** and **.NET 8**.
 This system features a background **Windows Worker Service** (WorkerService project) and a **WPF Application** (WpfApp project).
 
 
@@ -28,7 +28,9 @@ You can run this solution in two ways depending on whether you are developing/de
 
 #### Run both apps in VisualStudio
 1. In Visual Studio, start the **WorkerService** project first, then start the **WpfApp** project (right-click each project and select Debug → Start New Instance)
+
 **Limitation:** In this mode, the Worker Service runs as a console process. The WPF dashboard will show **"Not Installed"** because the service is not registered with the Windows SCM.
+
 **Functionality:** Background synchronization remains fully functional. View real-time activity in the **Visual Studio Output Window**.
 
 ---
