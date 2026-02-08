@@ -14,6 +14,7 @@ namespace UnitTests.AppServices
     public class BaseAppServiceTest
     {
         protected ServiceProvider _provider = null!;
+        protected string _dir = null!;
 
         [TestInitialize]
         public void Setup()
@@ -48,14 +49,18 @@ namespace UnitTests.AppServices
             using var scope = _provider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.EnsureCreated();
+
+            _dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(_dir);
         }
 
         [TestCleanup]
         public void Cleanup()
         {
             _provider.Dispose();
+            Directory.Delete(_dir, true);
         }
 
-        
+
     }
 }
