@@ -30,7 +30,7 @@ In Visual Studio, start the **WorkerService** project first, then start the **Wp
 
 **Limitation:** In this mode, only the Pause operation is available. Start and Stop will not work because the service is not registered. All other functionality works as expected.
 
-**Note:** View real-time logs in the VisualStudio Output window and WorkerService Console app.
+**Note:** You can view logs in the VisualStudio Output window and WorkerService Console app.
 
 ---
 
@@ -55,12 +55,12 @@ If you use SQL LocalDB instances as recommended, the service must run under your
 
 #### 4. Run the WpfApp 
 1. Navigate to your WpfApp project output folder and launch the **WpfApp.exe as Administrator** (required to control Windows Services).
-2. The WpfApp will now show the real-time status and allow you to (**Start/Stop/Pause**) service.
+2. The WpfApp will now show the real-time status and allow you to Start/Stop/Pause service.
 
 ---
 
 ## 📅 Synchronization Schedules
 
 The system uses the standard **5-field Unix Cron format**:
-
-> **Immediate Updates:** The Worker Service polls the database every minute. Changes made in the WpfApp (paths, schedules, or pausing) are picked up service without a restart.
+The Worker Service polls the database every minute. 
+Changes made in the WpfApp are picked up by service without a restart.
