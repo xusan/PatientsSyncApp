@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Services;
 
 namespace Bootstrap;
@@ -13,21 +14,15 @@ public static class Bootstrapper
 {   
     public static IServiceCollection AddApplicationInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
-        var connection = new SqliteConnection("DataSource=:memory:");
-        connection.Open();
-
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlite(connection);
-        });
-        services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseInMemoryDatabase("TestDb");
+            var connectionString = configuration.GetConnectionString("AppDbContext");
+            options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
 
             if (environment.IsDevelopment())
                 options.EnableSensitiveDataLogging();
         });
-        
+
         services.AddScoped<IPatientsRepository, PatientsRepository>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
 
