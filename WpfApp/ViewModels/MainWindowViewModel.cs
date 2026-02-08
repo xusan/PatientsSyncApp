@@ -54,7 +54,7 @@ namespace WpfApp.ViewModels
         public ICommand RefreshPatientsCommand { get; }
         public ICommand SelectImportFolderCommand { get; }
         public ICommand SelectExportFolderCommand { get; }
-        public const string PauseText = "Pause", ContinueText = "Continue", ErrorReadingStatus = "Error reading status", Paused = "Paused";
+        public const string PauseText = "Pause", ContinueText = "Continue", ErrorStatus = "Not Installed", Paused = "Paused";
 
         public string PauseButtonText => Settings.IsPaused ? ContinueText : PauseText;        
         public string StatusText { get; set; }
@@ -226,8 +226,8 @@ namespace WpfApp.ViewModels
             }
             catch (Exception ex)
             {
-                StatusText = ErrorReadingStatus;
-                logger.LogError(ex, ErrorReadingStatus);                
+                StatusText = ErrorStatus;
+                logger.LogError(ex, ErrorStatus);                
             }
         }
 

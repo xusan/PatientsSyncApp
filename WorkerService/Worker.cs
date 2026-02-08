@@ -61,7 +61,7 @@ public class Worker : BackgroundService
             }
 
             // Wait 1 minute for next cron check
-            await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
     }
 
