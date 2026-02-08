@@ -34,26 +34,26 @@ namespace WpfApp.ViewModels
             this.mapper = mapper;
             this.logger = logger;
 
-            RefreshPatientsCommand = new RelayCommand(OnRefreshPatientsCommand);
-            SaveSettingsCommand = new RelayCommand(OnSaveSettingsCommand);
-            StartCommand = new RelayCommand(OnStartCommand);
-            StopCommand = new RelayCommand(OnStopCommand);
-            PauseToggleCommand = new RelayCommand(OnPauseToggleCommand);
-            SelectImportFolderCommand = new RelayCommand(OnSelectImportFolderCommand);
-            SelectExportFolderCommand = new RelayCommand(OnSelectExportFolderCommand);
+            RefreshPatientsCommand = new AsyncRelayCommand(OnRefreshPatientsCommand);
+            SaveSettingsCommand = new AsyncRelayCommand(OnSaveSettingsCommand);
+            StartCommand = new AsyncRelayCommand(OnStartCommand);
+            StopCommand = new AsyncRelayCommand(OnStopCommand);
+            PauseToggleCommand = new AsyncRelayCommand(OnPauseToggleCommand);
+            SelectImportFolderCommand = new AsyncRelayCommand(OnSelectImportFolderCommand);
+            SelectExportFolderCommand = new AsyncRelayCommand(OnSelectExportFolderCommand);
 
             Initializer();            
         }
       
         public SettingsItemViewModel Settings { get; set; } = new SettingsItemViewModel();
         public IReadOnlyList<PatientItemViewModel> Patients { get; set; } = new List<PatientItemViewModel>();        
-        public ICommand StartCommand { get; }
-        public ICommand StopCommand { get; }
-        public ICommand PauseToggleCommand { get; }
-        public ICommand SaveSettingsCommand { get; }
-        public ICommand RefreshPatientsCommand { get; }
-        public ICommand SelectImportFolderCommand { get; }
-        public ICommand SelectExportFolderCommand { get; }
+        public IAsyncRelayCommand StartCommand { get; }
+        public IAsyncRelayCommand StopCommand { get; }
+        public IAsyncRelayCommand PauseToggleCommand { get; }
+        public IAsyncRelayCommand SaveSettingsCommand { get; }
+        public IAsyncRelayCommand RefreshPatientsCommand { get; }
+        public IAsyncRelayCommand SelectImportFolderCommand { get; }
+        public IAsyncRelayCommand SelectExportFolderCommand { get; }
         public const string PauseText = "Pause", ContinueText = "Continue", ErrorStatus = "Not Installed", Paused = "Paused";
 
         public string PauseButtonText => Settings.IsPaused ? ContinueText : PauseText;        
@@ -112,12 +112,12 @@ namespace WpfApp.ViewModels
             }
         }
 
-        private async void OnRefreshPatientsCommand()
+        private async Task OnRefreshPatientsCommand()
         {
             await LoadPatientsAsync();
         }
 
-        private void OnStartCommand()
+        private Task OnStartCommand()
         {
             try
             {
@@ -132,9 +132,11 @@ namespace WpfApp.ViewModels
 
                 MessageBox.Show($"Service '{Constants.ServiceName}' is not available. Please ensure it is installed.", "Service Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            return Task.CompletedTask;
         }
 
-        private void OnStopCommand()
+        private Task OnStopCommand()
         {
             try
             {
@@ -149,9 +151,11 @@ namespace WpfApp.ViewModels
                 logger.LogError(ex, "Failed to stop service.");
                 MessageBox.Show($"Service '{Constants.ServiceName}' is not available. Please ensure it is installed.", "Service Not Found", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            return Task.CompletedTask;
         }
 
-        private async void OnPauseToggleCommand()
+        private async Task OnPauseToggleCommand()
         {
             // Logic Pause: Update the DB flag
             Settings.IsPaused = !Settings.IsPaused;
@@ -163,7 +167,7 @@ namespace WpfApp.ViewModels
             logger.LogInformation($"Service logic set to: {(Settings.IsPaused ? "PAUSED" : "RUNNING")}");
         }
 
-        private async void OnSaveSettingsCommand()
+        private async Task OnSaveSettingsCommand()
         {
             logger.LogInformation("SaveSettings();");
             var isValid = this.ValidateSettings();
@@ -182,7 +186,7 @@ namespace WpfApp.ViewModels
             }
         }
 
-        private void OnSelectImportFolderCommand()
+        private Task OnSelectImportFolderCommand()
         {
             var dialog = new OpenFolderDialog
             {
@@ -194,9 +198,11 @@ namespace WpfApp.ViewModels
                 // Update the property via the Action
                 this.Settings.ImportFolder = dialog.FolderName;
             }
+
+            return Task.CompletedTask;
         }
 
-        private void OnSelectExportFolderCommand()
+        private Task OnSelectExportFolderCommand()
         {            
             var dialog = new OpenFolderDialog
             {
@@ -208,6 +214,8 @@ namespace WpfApp.ViewModels
                 // Update the property via the Action
                this.Settings.ExportFolder = dialog.FolderName;
             }
+
+            return Task.CompletedTask;
         }
 
         private void RefreshServiceStatus()
