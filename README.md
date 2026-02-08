@@ -9,10 +9,7 @@ This system features a background **Windows Worker Service** (WorkerService proj
 The application uses **EF Core** with a "Code-First" approach. 
 You can check or edit the `ConnectionString` in the `appsettings.json` file (located in the **WorkerService** project and also linked to the **WpfApp** project).
 
-* **Tested & Recommended:** The app was tested with **SQL LocalDB**, and as such, it is recommended to use SQL LocalDB for the best experience. 
-
-> [!NOTE]  
-> If you choose to use **LocalDB**, you can typically keep the default `appsettings.json` unchanged.
+* **Tested & Recommended:** The app was tested with **SQL LocalDB**, and as such, it is recommended to use SQL LocalDB for the best experience. If you choose to use **LocalDB**, you can typically keep the default `appsettings.json` unchanged.
 
 
 ---
