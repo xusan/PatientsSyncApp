@@ -1,6 +1,5 @@
 using Bootstrap;
 using Core.Common;
-using Microsoft.EntityFrameworkCore;
 using WorkerService;
 
 var builder = Host.CreateApplicationBuilder(args);
