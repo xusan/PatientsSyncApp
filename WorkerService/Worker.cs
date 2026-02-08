@@ -68,10 +68,14 @@ public class Worker : BackgroundService
     private bool IsTimeToRun(string cronExpression, string taskName)
     {
         try
-        {            
+        {
+            logger.LogInformation($"Worker.IsTimeToRun(cronExpression={cronExpression}, taskName={taskName})");
+
             var cron = CronExpression.Parse(cronExpression);
             var lastMinute = DateTime.UtcNow.AddMinutes(-1.1);
             var occurrence = cron.GetNextOccurrence(lastMinute);
+
+            logger.LogInformation($"Next occurrence for {taskName} is at {occurrence}");
 
             // If the scheduled time is within the last 60 seconds, return true
             return occurrence.HasValue &&

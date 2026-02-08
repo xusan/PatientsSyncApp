@@ -92,26 +92,39 @@ public abstract class Repository<T> : IRepository<T> where T : class, IEntity
 
     public async Task<int> BatchInsertOrUpdateAsync(IReadOnlyList<T> entities)
     {
-        var incomingIds = entities.Select(p => p.Id).ToList();
-        
-        var existingEntities = await table
-            .Where(p => incomingIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id);
+        int totalRowsAffected = 0;
+        int batchSize = 100; // Adjust batch size as needed
 
-        foreach (var incomingEntity in entities)
+        for (int i = 0; i < entities.Count; i += batchSize)
         {
-            if (existingEntities.TryGetValue(incomingEntity.Id, out var existingEntity))
+            // 1. Grab the current "chunk"
+            var batch = entities.Skip(i).Take(batchSize).ToList();
+            var incomingIds = batch.Select(p => p.Id).ToList();
+
+            // 2. Fetch only existing records for this specific batch
+            var existingEntities = await table
+                .Where(p => incomingIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id);
+
+            foreach (var incomingEntity in batch)
             {
-                // Intelligent update (only changes what is different)
-                table.Entry(existingEntity).CurrentValues.SetValues(incomingEntity);
+                if (existingEntities.TryGetValue(incomingEntity.Id, out var existingEntity))
+                {
+                    // Update: SetValues only updates properties that actually changed
+                    context.Entry(existingEntity).CurrentValues.SetValues(incomingEntity);
+                }
+                else
+                {                    
+                    table.Add(incomingEntity);
+                }
             }
-            else
-            {
-                await table.AddAsync(incomingEntity);
-            }
+
+            // 3. Save this batch and clear tracking to keep memory low
+            totalRowsAffected += await context.SaveChangesAsync();
+            context.ChangeTracker.Clear();
         }
 
-        return await context.SaveChangesAsync();
+        return totalRowsAffected;
     }
 
     public async Task<int> RemoveAsync(int id)

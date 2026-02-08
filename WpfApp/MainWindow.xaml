@@ -9,7 +9,7 @@
         Title="MainWindow" 
         Height="450" 
         Width="800"
-        d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}">
     <Grid>
         <TabControl Margin="10">
             <!-- TAB 1: PATIENT DATA -->
@@ -74,7 +74,7 @@
                                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Settings.ExportSchedule}" Margin="5"/>
 
                                 <!-- Row 3: Outbox Folder -->
-                                <Label Grid.Row="3" Content="Outbox Folder:" />
+                                <Label Grid.Row="3" Content="Export Folder:" />
                                 <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Settings.ExportFolder}" Margin="5" IsReadOnly="True"/>
                                 <Button Grid.Row="3" Grid.Column="2" Content="Browse" Command="{Binding SelectExportFolderCommand}" Margin="5" Padding="5,0"/>
 
